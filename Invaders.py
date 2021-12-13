@@ -39,23 +39,24 @@ PosAY = Haut/2
 Largeur = 100
 Hauteur = 50
 #Déplacement de l'alien
-vitesse = 100
+vitesse = 5
 Dx = vitesse * math.cos(0)
 #Création d'un alien
 New_Alien = Invaders_classe.Alien(PosAX, PosAY, Largeur/2, Hauteur/2, Dx, Mafenetre, Canevas)
 
 New_Alien.deplacement()
 
-"""
+
 #Création du vaisseau
 PosX = Larg/2
 PosY = Haut-10
-Vaisseau = Invaders_classe.Vaisseau(PosX, PosY, Mafenetre, Canevas)
-Vaisseau.Creation()
+Dx2 = 5
+Vaisseau = Invaders_classe.Vaisseau(PosX, PosY, 50, 25, Dx2 ,Mafenetre , Canevas)
+
 
 #Déplacement du vaisseau
 Canevas.bind('<Key>', Vaisseau.deplacement)
-"""
+
 
 #Création du widget SCORE
 score = Label(Mafenetre, text = "Score :")

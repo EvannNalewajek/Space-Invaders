@@ -41,22 +41,26 @@ class Alien :
         self.fenetre.after(50,self.deplacement)    
             
 class Vaisseau :
-    def __init__(self,PosX,PosY,fenetre,Canvas):
+    def __init__(self,PosX, PosY, largeur, hauteur, deplacement, fenetre, Canvas):
         self.PosX = PosX
         self.PosY = PosY
+        self.largeur = largeur
+        self.hauteur = hauteur
+        self.dpl = deplacement
         self.fenetre = fenetre
         self.canvas  = Canvas
+        self.spoutnik = self.canvas.create_rectangle(self.PosX-self.largeur,self.PosY-self.hauteur,self.PosX+self.largeur,self.PosY+self.hauteur,fill='blue')
         
-    def Creation(self):
-        self.canvas.create_rectangle(0,0, self.PosY,self.PosX,fill='blue')
-        
+   
     def deplacement(self,event):
-        global PosX, PosY
-        touche = event.keysym
-        if touche == '<Left>' :
-            PosX -= 5
-        if touche == '<Right>' :
-            PosX += 5
-        self.canvas.coords(self.Creation, PosX-10, PosY-10, PosX+10, PosY+10)
+        print("bouge")
+        if event.keysym == 'Left' :
+            print("gauche")
+            self.PosX -= self.dpl
+            self.canvas.coords(self.spoutnik, self.PosX-self.largeur, self.PosY-self.hauteur, self.PosX+self.largeur ,self.PosY+self.hauteur)
+        if event.keysym == 'Right' :
+            print("droite")
+            self.PosX += self.dpl
+            self.canvas.coords(self.spoutnik, self.PosX-self.largeur, self.PosY-self.hauteur, self.PosX+self.largeur ,self.PosY+self.hauteur)
             
         
