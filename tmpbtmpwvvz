@@ -1,0 +1,45 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jan  2 17:03:43 2022
+
+@author: evann
+"""
+
+from tkinter import Tk, Label, Button, Canvas, PhotoImage
+
+#Création de la fenêtre graphique
+Mafenetre=Tk()
+Mafenetre.title('Space Invaders')
+
+#Création du widget bouton "Lancement d'une partie"
+buttonStart = Button (Mafenetre, text="START", fg = "blue")
+buttonStart.pack()
+
+#Création du widget bouton quitter
+buttonQuitt = Button (Mafenetre, text="QUITTER", fg = 'red', command = Mafenetre.destroy)
+buttonQuitt.pack()
+
+#Canevas
+hauteur=480
+largeur=640
+canevas = Canvas(Mafenetre, width = largeur, height = hauteur, bg = 'black')
+canevas.pack(padx = 5, pady = 5)
+canevas.focus_set()
+canevas.bind('<Key>')
+
+#Affichage du score
+score=Label(Mafenetre,text='Score: 0')
+score.pack()
+
+#Affichage de la vie
+NbVies=Label(Mafenetre,text="Vies: 3")
+score.pack()
+
+#Importation des images
+ImageVaisseau=PhotoImage(file='spaceship.gif')
+ImageDestroy=PhotoImage(file='spaceshipdestroy.gif')
+ImageAlien=PhotoImage(file='invader.gif')
+ImageFond=PhotoImage(file='space.gif')
+
+#Lancement du gestionnaire d'événements
+Mafenetre.mainloop()
