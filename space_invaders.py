@@ -44,14 +44,14 @@ posX=largeur/2
 posY=hauteur-hauteur_vaisseau-5
 
 #Caractéristiques des aliens
-largeur_alien=22      
-hauteur_alien=16
-ecart_alien=10
-hauteur_ligne=50
-nbre_alien=15
-descente_alien=10
-VitesseDeplacement=10
-VitesseAlien=0.5
+largeur_alien = 22      
+hauteur_alien = 16
+ecart_alien = 10
+hauteur_ligne = 50
+nbre_alien = 15
+descente_alien = 10
+VitesseDeplacement = 10
+VitesseAlien = 0.5
 
 #Caractéristiques des tirs
 vitesse_tir_vaisseau=2
@@ -94,6 +94,10 @@ class Alien:
 
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
+    
+    def Destruction(self): 
+        if self.vivant == False : 
+            canevas.delete()
         
         
 class tirVaisseau:
@@ -153,6 +157,10 @@ def Reload():
     global Peut_Tirer
     Peut_Tirer=True
     return Peut_Tirer
+    AlienB = Alien_Bonus()
+    Mafenetre.after(200,AlienB.Affichage)
+    AlienB.Mouvement()
+    
         
 
 #Mouvement du vaisseau
@@ -172,6 +180,47 @@ def MouvementVaisseau(event):
         Mafenetre.after(1000,Reload)
                 
         
+        
+class Alien_Bonus :
+    def __init__(self) : 
+       self.vivant = True
+       self.x = posX
+       self.y = hauteur_ligne
+       self.dir = 1
+       self.vitesse = VitesseAlien * 2
+       self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
+       
+
+
+    def Affichage(self):
+        canevas.coords(self.apparence,self.x,self.y)
+         
+        
+    def Mouvement(self):
+        if self.x + largeur_alien>=largeur and self.dir == 1 : 
+            self.dir = -1
+        elif self.x-largeur_alien<=0 and self.dir == -1 :
+            self.dir = 1
+        self.x += self.vitesse * self.dir
+        self.Affichage()
+        Mafenetre.after(5,self.Mouvement)
+    
+       
+        
+
+       
+       
+
+        
+        
+        
+        
+        
+        
+        
+        
+    
+
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command=NouvellePartie)
 buttonStart.grid(row=0,column=1)
