@@ -42,14 +42,14 @@ posX=largeur/2
 posY=hauteur-hauteur_vaisseau-5
 
 #Caractéristiques des aliens
-largeur_alien=22      
-hauteur_alien=16
-ecart_alien=10
-hauteur_ligne=50
-nbre_alien=15
-descente_alien=10
-VitesseDeplacement=10
-VitesseAlien=0.5
+largeur_alien = 22      
+hauteur_alien = 16
+ecart_alien = 10
+hauteur_ligne = 50
+nbre_alien = 15
+descente_alien = 10
+VitesseDeplacement = 10
+VitesseAlien = 0.5
 
 #Création des classes
 class Spaceship:
@@ -88,6 +88,10 @@ class Alien:
 
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
+    
+    def Destruction(self): 
+        if self.vivant == False : 
+            canevas.delete()
         
 
 def MouvementAlien():
@@ -113,6 +117,10 @@ def NouvellePartie():
     for i in ennemie:
         i.Creation()
     MouvementAlien()
+    AlienB = Alien_Bonus()
+    Mafenetre.after(200,AlienB.Affichage)
+    AlienB.Mouvement()
+    
         
 
 #Mouvement du vaisseau
@@ -123,6 +131,45 @@ def MouvementVaisseau(event):
         vaisseau.deplacement(-1)
     elif touche=='Right':
         vaisseau.deplacement(1)
+        
+class Alien_Bonus :
+    def __init__(self) : 
+       self.vivant = True
+       self.x = posX
+       self.y = hauteur_ligne
+       self.dir = 1
+       self.vitesse = VitesseAlien * 2
+       self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
+       
+
+
+    def Affichage(self):
+        canevas.coords(self.apparence,self.x,self.y)
+         
+        
+    def Mouvement(self):
+        if self.x + largeur_alien>=largeur and self.dir == 1 : 
+            self.dir = -1
+        elif self.x-largeur_alien<=0 and self.dir == -1 :
+            self.dir = 1
+        self.x += self.vitesse * self.dir
+        self.Affichage()
+        Mafenetre.after(5,self.Mouvement)
+    
+       
+        
+
+       
+       
+
+        
+        
+        
+        
+        
+        
+        
+        
     
 
 #Création du widget bouton "Lancement d'une partie"
