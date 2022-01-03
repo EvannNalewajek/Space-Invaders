@@ -6,6 +6,8 @@ Created on Sun Jan  2 17:03:43 2022
 """
 
 from tkinter import Tk, Label, Button, Canvas, PhotoImage
+import File_Fonctions as ff
+import Pile_Fonctions as pf
 
 #Création de la fenêtre graphique
 Mafenetre=Tk()
@@ -51,6 +53,10 @@ descente_alien=10
 VitesseDeplacement=10
 VitesseAlien=0.5
 
+#Caractéristiques des tirs
+vitesse_tir_vaisseau=2
+Peut_Tirer=True
+
 #Création des classes
 class Spaceship:
     
@@ -89,6 +95,21 @@ class Alien:
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
         
+        
+class tirVaisseau:
+    
+    def __init__(self,X,Y):
+        self.x=X
+        self.y=Y
+        self.apparence=canevas.create_line(self.x, self.y, self.x, self.y+5,fill='white')
+        
+    def Affichage(self):
+        canevas.coords(self.apparence,self.x,self.y,self.x,self.y+5)
+        
+    def Fin(self):
+        canevas.delete()
+
+
 
 def MouvementAlien():
     global ennemie
@@ -100,9 +121,21 @@ def MouvementAlien():
         i.x+=i.vitesse*i.dir
         i.Affichage()  
     Mafenetre.after(5,MouvementAlien)
+    
+def MouvementTir():
+    global Tir
+    if ff.Est_vide(Tir)==False:
+        for i in Tir:
+            if i.y>-5:
+                i.y-=vitesse_tir_vaisseau
+            else:
+                i.Fin()
+                ff.Retirer(Tir)
+            i.Affichage()
+    Mafenetre.after(5,MouvementTir)
 
 def NouvellePartie():
-    global vaisseau,ennemie
+    global vaisseau,ennemie,Tir
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
@@ -113,18 +146,32 @@ def NouvellePartie():
     for i in ennemie:
         i.Creation()
     MouvementAlien()
+    Tir=[]
+    MouvementTir()
+    
+def Reload():
+    global Peut_Tirer
+    Peut_Tirer=True
+    return Peut_Tirer
         
 
 #Mouvement du vaisseau
 def MouvementVaisseau(event):
-    # global TempsTir
+    global Peut_Tirer
     touche=event.keysym
     if touche=='Left':
         vaisseau.deplacement(-1)
     elif touche=='Right':
         vaisseau.deplacement(1)
-    
-
+    elif touche=='space':
+        if Peut_Tirer:
+            print(Peut_Tirer)
+            global Tir
+            ff.Ajouter(Tir,tirVaisseau(vaisseau.x,vaisseau.y))
+            Peut_Tirer=False
+        Mafenetre.after(1000,Reload)
+                
+        
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command=NouvellePartie)
 buttonStart.grid(row=0,column=1)
