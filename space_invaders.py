@@ -8,6 +8,7 @@ Created on Sun Jan  2 17:03:43 2022
 from tkinter import Tk, Label, Button, Canvas, PhotoImage
 import File_Fonctions as ff
 import Pile_Fonctions as pf
+from random import randint
 
 #Création de la fenêtre graphique
 Mafenetre=Tk()
@@ -54,7 +55,9 @@ VitesseDeplacement = 10
 VitesseAlien = 0.5
 
 #Caractéristiques des tirs
-vitesse_tir_vaisseau=2
+FileTir=[]
+FileTirAlien=[]
+vitesse_tir=1
 Peut_Tirer=True
 
 #Création des classes
@@ -75,6 +78,20 @@ class Spaceship:
         
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
+        
+    def Blesser(self):
+        self.Etat1()
+        Mafenetre.after(100,self.Etat2)
+        Mafenetre.after(200,self.Etat1)
+        Mafenetre.after(300,self.Etat2)
+        Mafenetre.after(400,self.Etat1)
+        Mafenetre.after(500,self.Etat2)
+
+    def Etat1(self):
+        canevas.itemconfig(self.apparence,image=ImageDestroy)
+        
+    def Etat2(self):
+        canevas.itemconfig(self.apparence,image=ImageVaisseau)
     
 
 class Alien:
@@ -102,17 +119,79 @@ class Alien:
         
 class tirVaisseau:
     
+    Compteur=0
     def __init__(self,X,Y):
         self.x=X
         self.y=Y
+        self.mouvement=True
         self.apparence=canevas.create_line(self.x, self.y, self.x, self.y+5,fill='white')
+        tirVaisseau.Compteur += 1
         
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y,self.x,self.y+5)
         
-    def Fin(self):
-        canevas.delete()
+    def Deplacement(self):
+        if self.mouvement:
+            self.y-=vitesse_tir
+            self.Affichage()
+            self.Toucher()
+            Mafenetre.after(5,self.Deplacement)
 
+    def Toucher(self):
+        if self.y<0:
+            self.mouvement=False
+            canevas.delete(self.apparence)
+            ff.Retirer(FileTir)
+            tirVaisseau.Compteur-=1
+        else:
+            for i in ennemie:
+                if i.vivant and self.y>=i.y and self.y<=i.y+hauteur_alien and self.x<=i.x+largeur_alien and self.x>=i.x:
+                    self.Fin()
+                    canevas.delete(i.apparence)
+                    i.vivant=False
+        
+    def Fin(self):
+        self.mouvement=False
+        canevas.delete(self.apparence)
+        ff.Retirer(FileTir)
+        tirVaisseau.Compteur-=1
+
+class TirAlien:
+    
+    def __init__(self,i):
+        self.x=ennemie[i].x
+        self.y=ennemie[i].y
+        self.apparence=canevas.create_line(self.x , self.y-4 , self.x ,\
+        self.y , fill='red')
+        self.mouvement=True
+        self.Deplacement()
+
+    def Affichage(self):
+        canevas.coords(self.apparence , self.x , self.y-4 , self.x , self.y)
+        
+    def Deplacement(self):
+        if self.mouvement:
+            self.y+=vitesse_tir
+            self.Affichage()
+            self.Toucher()
+            Mafenetre.after(5,self.Deplacement)
+            
+    def Toucher(self):
+        global Vies
+        if self.y>hauteur:
+            self.encours=False
+            canevas.delete(self.apparence)
+            ff.Retirer(FileTirAlien)
+        elif self.y>=vaisseau.y-5 and self.y<=vaisseau.y+5 and\
+            self.x<=vaisseau.x+largeur_vaisseau/2 and\
+            self.x>=vaisseau.x-largeur_vaisseau/2 :
+                self.mouvement=False
+                canevas.delete(self.apparence)
+                ff.Retirer(FileTirAlien)
+                Vies-=1
+                vaisseau.Blesser()
+                #if Vies==0:
+                    #C'est la défaite koi
 
 
 def MouvementAlien():
@@ -126,42 +205,40 @@ def MouvementAlien():
         i.Affichage()  
     Mafenetre.after(5,MouvementAlien)
     
-def MouvementTir():
-    global Tir
-    if ff.Est_vide(Tir)==False:
-        for i in Tir:
-            if i.y>-5:
-                i.y-=vitesse_tir_vaisseau
-            else:
-                i.Fin()
-                ff.Retirer(Tir)
-            i.Affichage()
-    Mafenetre.after(5,MouvementTir)
+def Tir_Alien():
+    global ennemie,FileTirAlien
+    L=[i.vivant for i in ennemie]
+    i=randint(0,len(ennemie)-1)
+    if L[i]:
+        ff.Ajouter(FileTirAlien,TirAlien(i))
+        Mafenetre.after(200,Tir_Alien)
+    else:
+        Mafenetre.after(1,Tir_Alien)
 
 def NouvellePartie():
-    global vaisseau,ennemie,Tir
+    global vaisseau,ennemie,Vies
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
     vaisseau=Spaceship()
+    Vies=3
     ennemie=[]
     for i in range(nbre_alien):
         ennemie.append(Alien())
     for i in ennemie:
         i.Creation()
     MouvementAlien()
-    Tir=[]
-    MouvementTir()
+    Tir_Alien()
     
 def Reload():
     global Peut_Tirer
     Peut_Tirer=True
     return Peut_Tirer
-    AlienB = Alien_Bonus()
-    Mafenetre.after(200,AlienB.Affichage)
-    AlienB.Mouvement()
-    
-        
+
+    # AlienB = Alien_Bonus()
+    # Mafenetre.after(200,AlienB.Affichage)
+    # AlienB.Mouvement()
+       
 
 #Mouvement du vaisseau
 def MouvementVaisseau(event):
@@ -173,14 +250,15 @@ def MouvementVaisseau(event):
         vaisseau.deplacement(1)
     elif touche=='space':
         if Peut_Tirer:
-            print(Peut_Tirer)
-            global Tir
-            ff.Ajouter(Tir,tirVaisseau(vaisseau.x,vaisseau.y))
+            global FileTir
+            ff.Ajouter(FileTir,tirVaisseau(vaisseau.x,vaisseau.y))
+            FileTir[tirVaisseau.Compteur-1].Deplacement()
             Peut_Tirer=False
-        Mafenetre.after(1000,Reload)
-                
-        
-        
+            Mafenetre.after(1000, Reload)
+            
+
+     
+    
 class Alien_Bonus :
     def __init__(self) : 
        self.vivant = True
@@ -204,22 +282,6 @@ class Alien_Bonus :
         self.x += self.vitesse * self.dir
         self.Affichage()
         Mafenetre.after(5,self.Mouvement)
-    
-       
-        
-
-       
-       
-
-        
-        
-        
-        
-        
-        
-        
-        
-    
 
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command=NouvellePartie)
