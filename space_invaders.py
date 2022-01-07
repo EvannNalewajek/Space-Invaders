@@ -114,7 +114,7 @@ class Alien:
     
     def Destruction(self): 
         if self.vivant == False : 
-            canevas.delete()
+            canevas.delete(self.apparence)
         
         
 class tirVaisseau:
@@ -147,8 +147,9 @@ class tirVaisseau:
             for i in ennemie:
                 if i.vivant and self.y>=i.y and self.y<=i.y+hauteur_alien and self.x<=i.x+largeur_alien and self.x>=i.x:
                     self.Fin()
-                    canevas.delete(i.apparence)
-                    i.vivant=False
+                    # canevas.delete(i.apparence)
+                    i.vivant = False
+                    i.Destruction()
         
     def Fin(self):
         self.mouvement=False
@@ -179,7 +180,7 @@ class TirAlien:
     def Toucher(self):
         global Vies
         if self.y>hauteur:
-            self.encours=False
+            self.mouvement = False
             canevas.delete(self.apparence)
             ff.Retirer(FileTirAlien)
         elif self.y>=vaisseau.y-5 and self.y<=vaisseau.y+5 and\
@@ -213,7 +214,7 @@ def Tir_Alien():
         ff.Ajouter(FileTirAlien,TirAlien(i))
         Mafenetre.after(200,Tir_Alien)
     else:
-        Mafenetre.after(1,Tir_Alien)
+        Mafenetre.after(5,Tir_Alien)
 
 def NouvellePartie():
     global vaisseau,ennemie,Vies
