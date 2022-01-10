@@ -23,8 +23,9 @@ hauteur=480
 largeur=640
 
 #Affichage du score
-score=Label(Mafenetre,text='Score: 0')
-score.grid(row=1,column=1)
+Score=0
+scoreDisplay=Label(Mafenetre,text='Score: 0')
+scoreDisplay.grid(row=1,column=1)
 
 #Affichage de la vie
 NbrVies=Label(Mafenetre,text="Vie : 3")
@@ -53,7 +54,7 @@ hauteur_ligne = 50
 nbre_alien = 15
 descente_alien = 10
 VitesseDeplacement = 10
-VitesseAlien = 0.5
+VitesseAlien = 0.35
 
 
 #Caractéristiques des tirs
@@ -121,6 +122,8 @@ class Alien:
     def Destruction(self): 
         if self.vivant == False : 
             canevas.delete(self.apparence)
+        if ennemie == []:
+            FinDePartie()
         
         
 class tirVaisseau:
@@ -145,18 +148,27 @@ class tirVaisseau:
                 Mafenetre.after(5,self.Deplacement)
 
     def Toucher(self):
+        global AB, Score
         if self.y<0:
-            self.mouvement=False
-            canevas.delete(self.apparence)
-            ff.Retirer(FileTir)
-            tirVaisseau.Compteur-=1
+            self.Fin()
+            
+        elif self.y>=AB.y-5 and self.y<=AB.y+5 and\
+            self.x<=AB.x+largeur_vaisseau/2 and\
+            self.x>=AB.x-largeur_vaisseau/2 :
+                canevas.delete(AB.apparence)
+                self.Fin()
+                Score+=150
+                ScoreMAJ()     
+        
         else:
             for i in ennemie:
                 if i.vivant and self.y>=i.y and self.y<=i.y+hauteur_alien and self.x<=i.x+largeur_alien and self.x>=i.x:
                     self.Fin()
-                    # canevas.delete(i.apparence)
                     i.vivant = False
+                    ennemie.pop(ennemie.index(i))
                     i.Destruction()
+                    Score+=25
+                    ScoreMAJ()
         
     def Fin(self):
         self.mouvement=False
@@ -173,13 +185,12 @@ class TirAlien:
         self.y , fill='red')
         self.mouvement=True
         self.Deplacement()
-
+        
     def Affichage(self):
         canevas.coords(self.apparence , self.x , self.y-4 , self.x , self.y)
         
     def Deplacement(self):
         if Partie_en_Cours:
-            print('bouge')
             if self.mouvement:
                 self.y+=vitesse_tir
                 self.Affichage()
@@ -208,7 +219,6 @@ class TirAlien:
 def MouvementAlien():
         global ennemie, Partie_en_Cours
         if Partie_en_Cours:
-            print('bouge2')
             if (ennemie[-1].x+largeur_alien>=largeur and ennemie[-1].dir==1) or (ennemie[0].x-largeur_alien<=0 and ennemie[0].dir==-1):
                 for i in ennemie:
                     i.dir*=-1
@@ -221,17 +231,18 @@ def MouvementAlien():
 def Tir_Alien():
     global ennemie, FileTirAlien, Partie_en_Cours
     if Partie_en_Cours:
-        print('bouge3')
         L=[i.vivant for i in ennemie]
         i=randint(0,len(ennemie)-1)
         if L[i]:
             ff.Ajouter(FileTirAlien,TirAlien(i))
-            Mafenetre.after(200,Tir_Alien)
+            Mafenetre.after(500,Tir_Alien)
         else:
             Mafenetre.after(1,Tir_Alien)
+    else:
+        Mafenetre.after(5,Tir_Alien)
 
 def NouvellePartie():
-    global vaisseau,ennemie,Vies, Partie_en_Cours
+    global vaisseau, AB, ennemie, Vies, Score, Partie_en_Cours
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
@@ -241,6 +252,8 @@ def NouvellePartie():
         ennemie.append(Alien())
     for i in ennemie:
         i.Creation()
+    AB = Alien_Bonus()
+    Mafenetre.after(7500, AB.Creation)
     Partie_en_Cours=True
     
 def FinDePartie():
@@ -255,16 +268,20 @@ def FinDePartie():
     while not (FileTirAlien == []):
         ff.Retirer(FileTirAlien)
     buttonRejouer.grid()
-    Perdu=Label(Mafenetre,text="Defaite", fg = "red")
+    Perdu=Label(Mafenetre,text="Game Over", fg = "red")
     Perdu.grid(row = 2,column = 1)
     print(ennemie)
     print(FileTir)
     print(FileTirAlien)
     
 def Rejouer():
-    global Partie_en_Cours
+    global NbrVies
     buttonRejouer.grid_remove()
     Perdu.destroy()
+    Alien.Compteur=0
+    NbrVies.destroy()
+    NbrVies=Label(Mafenetre,text="Vie : 3")
+    NbrVies.grid(row=1,column=2)
     NouvellePartie()
     
     
@@ -273,18 +290,20 @@ def Reload():
     Peut_Tirer=True
     return Peut_Tirer
 
-    # AlienB = Alien_Bonus()
-    # Mafenetre.after(200,AlienB.Affichage)
-    # AlienB.Mouvement()
-    
     
 def VieMAJ():
     global Vies, NbrVies
     carac="Vie : "+str(Vies)
-    print(carac)
     NbrVies.destroy()
     NbrVies=Label(Mafenetre,text=carac)
     NbrVies.grid(row=1,column=2)
+    
+def ScoreMAJ():
+    global Score, scoreDisplay
+    carac="Score : "+str(Score)
+    scoreDisplay.destroy()
+    scoreDisplay=Label(Mafenetre,text=carac)
+    scoreDisplay.grid(row=1,column=1)
     
 
 #Mouvement du vaisseau
@@ -301,7 +320,7 @@ def MouvementVaisseau(event):
                 ff.Ajouter(FileTir,tirVaisseau(vaisseau.x,vaisseau.y))
                 FileTir[tirVaisseau.Compteur-1].Deplacement()
                 Peut_Tirer=False
-                Mafenetre.after(1000, Reload)
+                Mafenetre.after(1, Reload)
             
 
      
@@ -313,21 +332,22 @@ class Alien_Bonus:
        self.y = hauteur_ligne
        self.dir = 1
        self.vitesse = VitesseAlien * 2
-       self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
-       
-
 
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
-         
+        
+    def Creation(self):
+        self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
+        Alien_Bonus.Mouvement(self)
         
     def Mouvement(self):
-        if self.x + largeur_alien>=largeur and self.dir == 1 : 
-            self.dir = -1
-        elif self.x-largeur_alien<=0 and self.dir == -1 :
-            self.dir = 1
-        self.x += self.vitesse * self.dir
-        self.Affichage()
+        if Partie_en_Cours:
+            if self.x + largeur_alien>=largeur and self.dir == 1 : 
+                self.dir = -1
+            elif self.x-largeur_alien<=0 and self.dir == -1 :
+                self.dir = 1
+            self.x += self.vitesse * self.dir
+            self.Affichage()
         Mafenetre.after(5,self.Mouvement)
 
 #Création du widget bouton "Lancement d'une partie"
@@ -335,9 +355,9 @@ buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePa
 buttonStart.grid(row=0,column=1)
 
 #Création du widget bouton "Relancer une partie"
-# buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
-# buttonRejouer.grid(row=0,column=1)
-# buttonRejouer.grid_remove()
+buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
+buttonRejouer.grid(row=0,column=1)
+buttonRejouer.grid_remove()
 
 #Contrôle du vaisseau
 canevas = Canvas(Mafenetre, width = largeur, height = hauteur, bg = 'black')
