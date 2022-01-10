@@ -54,6 +54,7 @@ descente_alien = 10
 VitesseDeplacement = 10
 VitesseAlien = 0.5
 
+
 #Caractéristiques des tirs
 FileTir=[]
 FileTirAlien=[]
@@ -99,8 +100,8 @@ class Alien:
     Compteur=0
     def __init__(self):
         Alien.Compteur += 1
-        self.Compteur=Alien.Compteur
-        self.vivant=True
+        self.Compteur = Alien.Compteur
+        self.vivant = True
         self.x=self.Compteur*(ecart_alien+largeur_alien)
         self.y=hauteur_ligne
         self.dir=1
@@ -285,7 +286,7 @@ class Alien_Bonus :
         Mafenetre.after(5,self.Mouvement)
 
 #Création du widget bouton "Lancement d'une partie"
-buttonStart = Button (Mafenetre, text="START", fg = "blue", command=NouvellePartie)
+buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePartie)
 buttonStart.grid(row=0,column=1)
 
 #Contrôle du vaisseau
