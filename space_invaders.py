@@ -62,7 +62,8 @@ FileTirAlien=[]
 vitesse_tir=1
 Peut_Tirer=True
 
-Partie_en_Cours=True
+Partie_en_Cours=False
+
 
 #Création des classes
 class Spaceship:
@@ -74,12 +75,12 @@ class Spaceship:
 
 
     def deplacement(self,dir):
-        while Partie_en_Cours:
+        if Partie_en_Cours:
             if self.x>=largeur_vaisseau and dir==-1:
                 self.x+=VitesseDeplacement*dir
             elif self.x<=largeur-largeur_vaisseau and dir==1:
                 self.x+=VitesseDeplacement*dir
-                self.Affichage()
+            self.Affichage()
         
     def Affichage(self):
         canevas.coords(self.apparence,self.x,self.y)
@@ -136,7 +137,7 @@ class tirVaisseau:
         canevas.coords(self.apparence,self.x,self.y,self.x,self.y+5)
         
     def Deplacement(self):
-        while Partie_en_Cours:
+        if Partie_en_Cours:
             if self.mouvement:
                 self.y-=vitesse_tir
                 self.Affichage()
@@ -177,7 +178,8 @@ class TirAlien:
         canevas.coords(self.apparence , self.x , self.y-4 , self.x , self.y)
         
     def Deplacement(self):
-        while Partie_en_Cours:
+        if Partie_en_Cours:
+            print('bouge')
             if self.mouvement:
                 self.y+=vitesse_tir
                 self.Affichage()
@@ -204,20 +206,22 @@ class TirAlien:
 
 
 def MouvementAlien():
-    while Partie_en_Cours:
-        global ennemie
-        if (ennemie[-1].x+largeur_alien>=largeur and ennemie[-1].dir==1) or (ennemie[0].x-largeur_alien<=0 and ennemie[0].dir==-1):
+        global ennemie, Partie_en_Cours
+        if Partie_en_Cours:
+            print('bouge2')
+            if (ennemie[-1].x+largeur_alien>=largeur and ennemie[-1].dir==1) or (ennemie[0].x-largeur_alien<=0 and ennemie[0].dir==-1):
+                for i in ennemie:
+                    i.dir*=-1
+                    i.y+=descente_alien
             for i in ennemie:
-                i.dir*=-1
-                i.y+=descente_alien
-        for i in ennemie:
-            i.x+=i.vitesse*i.dir
-            i.Affichage()  
-    Mafenetre.after(5,MouvementAlien)
+                i.x+=i.vitesse*i.dir
+                i.Affichage()  
+        Mafenetre.after(5,MouvementAlien)
     
 def Tir_Alien():
-    global ennemie,FileTirAlien
-    while Partie_en_Cours:
+    global ennemie, FileTirAlien, Partie_en_Cours
+    if Partie_en_Cours:
+        print('bouge3')
         L=[i.vivant for i in ennemie]
         i=randint(0,len(ennemie)-1)
         if L[i]:
@@ -227,24 +231,23 @@ def Tir_Alien():
             Mafenetre.after(1,Tir_Alien)
 
 def NouvellePartie():
-    global vaisseau,ennemie,Vies,Partie_en_Cours
+    global vaisseau,ennemie,Vies, Partie_en_Cours
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
-    Partie_en_Cours=True
     vaisseau=Spaceship()
     Vies=3
     for i in range(nbre_alien):
         ennemie.append(Alien())
     for i in ennemie:
         i.Creation()
-    MouvementAlien()
-    Tir_Alien()
+    Partie_en_Cours=True
     
 def FinDePartie():
-    global Partie_en_Cours
-    Partie_en_Cours=False
+    global Partie_en_Cours, Perdu
+    canevas.delete("all")
     canevas.grid_remove()
+    Partie_en_Cours=False
     while not (ennemie == []):
         ennemie.pop()
     while not (FileTir == []):
@@ -252,14 +255,16 @@ def FinDePartie():
     while not (FileTirAlien == []):
         ff.Retirer(FileTirAlien)
     buttonRejouer.grid()
-    Perdu=Label(Mafenetre,text="Défaite", fg = "red")
-    Perdu.grid(row = 1,column = 2)
+    Perdu=Label(Mafenetre,text="Defaite", fg = "red")
+    Perdu.grid(row = 2,column = 1)
     print(ennemie)
     print(FileTir)
     print(FileTirAlien)
     
 def Rejouer():
+    global Partie_en_Cours
     buttonRejouer.grid_remove()
+    Perdu.destroy()
     NouvellePartie()
     
     
@@ -285,13 +290,12 @@ def VieMAJ():
 #Mouvement du vaisseau
 def MouvementVaisseau(event):
     global Peut_Tirer
-    while Partie_en_Cours:
-        touche=event.keysym
-        if touche=='Left':
+    touche=event.keysym
+    if touche=='Left':
             vaisseau.deplacement(-1)
-        elif touche=='Right':
+    elif touche=='Right':
             vaisseau.deplacement(1)
-        elif touche=='space':
+    elif touche=='space':
             if Peut_Tirer:
                 global FileTir
                 ff.Ajouter(FileTir,tirVaisseau(vaisseau.x,vaisseau.y))
@@ -342,5 +346,7 @@ canevas.grid_remove()
 canevas.focus_set()
 canevas.bind('<Key>',MouvementVaisseau)
 
+MouvementAlien()
+Tir_Alien()
 #Lancement du gestionnaire d'événements
 Mafenetre.mainloop()
