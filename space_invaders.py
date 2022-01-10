@@ -223,12 +223,15 @@ def Tir_Alien():
     if Partie_en_Cours:
         print('bouge3')
         L=[i.vivant for i in ennemie]
-        i=randint(0,len(ennemie)-1)
+        i=randint(0, len(ennemie)-1)
         if L[i]:
             ff.Ajouter(FileTirAlien,TirAlien(i))
             Mafenetre.after(200,Tir_Alien)
         else:
             Mafenetre.after(1,Tir_Alien)
+    else : 
+        Mafenetre.after(5, Tir_Alien)
+
 
 def NouvellePartie():
     global vaisseau,ennemie,Vies, Partie_en_Cours
@@ -273,9 +276,6 @@ def Reload():
     Peut_Tirer=True
     return Peut_Tirer
 
-    # AlienB = Alien_Bonus()
-    # Mafenetre.after(200,AlienB.Affichage)
-    # AlienB.Mouvement()
     
     
 def VieMAJ():
@@ -335,9 +335,9 @@ buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePa
 buttonStart.grid(row=0,column=1)
 
 #Création du widget bouton "Relancer une partie"
-# buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
-# buttonRejouer.grid(row=0,column=1)
-# buttonRejouer.grid_remove()
+buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
+buttonRejouer.grid(row=0,column=1)
+buttonRejouer.grid_remove()
 
 #Contrôle du vaisseau
 canevas = Canvas(Mafenetre, width = largeur, height = hauteur, bg = 'black')
