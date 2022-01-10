@@ -241,26 +241,26 @@ def NouvellePartie():
     MouvementAlien()
     Tir_Alien()
     
-def FinDePartie():
-    global Partie_en_Cours
-    Partie_en_Cours=False
-    canevas.grid_remove()
-    while not (ennemie == []):
-        ennemie.pop()
-    while not (FileTir == []):
-        ff.Retirer(FileTir)
-    while not (FileTirAlien == []):
-        ff.Retirer(FileTirAlien)
-    buttonRejouer.grid()
-    Perdu=Label(Mafenetre,text="Défaite", fg = "red")
-    Perdu.grid(row = 1,column = 2)
-    print(ennemie)
-    print(FileTir)
-    print(FileTirAlien)
+# def FinDePartie():
+#     global Partie_en_Cours
+#     Partie_en_Cours=False
+#     canevas.grid_remove()
+#     while not (ennemie == []):
+#         ennemie.pop()
+#     while not (FileTir == []):
+#         ff.Retirer(FileTir)
+#     while not (FileTirAlien == []):
+#         ff.Retirer(FileTirAlien)
+#     buttonRejouer.grid()
+#     Perdu=Label(Mafenetre,text="Défaite", fg = "red")
+#     Perdu.grid(row = 1,column = 2)
+#     print(ennemie)
+#     print(FileTir)
+#     print(FileTirAlien)
     
-def Rejouer():
-    buttonRejouer.grid_remove()
-    NouvellePartie()
+# def Rejouer():
+#     buttonRejouer.grid_remove()
+#     NouvellePartie()
     
     
 def Reload():
@@ -331,9 +331,9 @@ buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePa
 buttonStart.grid(row=0,column=1)
 
 #Création du widget bouton "Relancer une partie"
-buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
-buttonRejouer.grid(row=0,column=1)
-buttonRejouer.grid_remove()
+# buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
+# buttonRejouer.grid(row=0,column=1)
+# buttonRejouer.grid_remove()
 
 #Contrôle du vaisseau
 canevas = Canvas(Mafenetre, width = largeur, height = hauteur, bg = 'black')

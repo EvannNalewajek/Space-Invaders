@@ -52,19 +52,16 @@ def NouvellePartie():
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
-    vaisseau = Spaceship()
+    vaisseau = Spaceship(canevas, Mafenetre)
     Vies=3
     ennemie=[]
     for i in range(nbre_alien):
-        ennemie.append(Alien())
+        ennemie.append(Alien(canevas, Mafenetre))
     for i in ennemie:
         i.Creation()
-    MouvementAlien()
     Tir_Alien()
-    tirVaisseau()
     MouvementVaisseau()
     Reload()
-
 
 
 
