@@ -306,7 +306,7 @@ def MouvementVaisseau(event):
 
      
     
-class Alien_Bonus :
+class Alien_Bonus:
     def __init__(self) : 
        self.vivant = True
        self.x = posX
