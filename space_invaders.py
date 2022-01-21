@@ -231,7 +231,11 @@ def MouvementAlien():
                     i.y+=descente_alien
             for i in ennemie:
                 i.x+=i.vitesse*i.dir
-                i.Affichage()  
+                i.Affichage() 
+            for i in ennemie :
+                if ennemie[i].x + hauteur_alien >= Spaceship.x - Spaceship.hauteur : 
+                    FinDePartie()
+            print("Perdu")
         Mafenetre.after(5,MouvementAlien)
     
 def Tir_Alien():
