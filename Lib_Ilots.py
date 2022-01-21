@@ -17,9 +17,10 @@ class Ilots :
         self.fenetre = Mafenetre
         self.x = 50
         self.y = 250
-        self.hauteur = 5
-        self.largeur = 5
-        self.nombre = 3
+        self.hauteur = 3
+        self.largeur = 20 
+        self.vies = 3
+        self.vivant = True
         self.apparence = self.canevas.create_rectangle(self.x - self.largeur,\
                                                        self.y - self.hauteur,\
                                                            self.x + self.largeur,\
@@ -32,6 +33,11 @@ class Ilots :
         self.apparence
         
     def Destruction(self) : 
+        if self.vivant == False:
+            self.canevas.delete(self.apparence)
+            
+            
+    def Entame(self) : 
         if 
         
         
