@@ -9,7 +9,7 @@ from tkinter import Tk , PhotoImage
 import File_Fonctions as ff
 from random import randint
 from Lib_Vaisseau import Spaceship 
-
+from newVersion import FinDePartie
 
 #Canevas
 hauteurC = 480
@@ -59,6 +59,17 @@ class Alien:
             i.Affichage()  
         self.fenetre.after(5,lambda : self.MouvementAlien(ennemie))
             
+    def VictoireAlien(self,ennemie):
+        for i in ennemie :
+            if ennemie[i].x + self.hauteur >= Spaceship.x - Spaceship.hauteur : 
+                FinDePartie()
+        print("Perdu")
+        
+        
+        
+        
+        
+        
             
 class TirAlien:
     

@@ -59,7 +59,25 @@ def NouvellePartie():
     Talien.Deplacement()
     #vaisseau.Reload()
    
-
+    
+def FinDePartie():
+    global Partie_en_Cours, Perdu
+    canevas.delete("all")
+    canevas.grid_remove()
+    Partie_en_Cours=False
+    while not (ennemie == []):
+        ennemie.pop()
+    while not (FileTir == []):
+        ff.Retirer(FileTir)
+    while not (FileTirAlien == []):
+        ff.Retirer(FileTirAlien)
+    buttonRejouer.grid()
+    Perdu=Label(Mafenetre,text="Game Over", fg = "red")
+    Perdu.grid(row = 2,column = 1)
+    print(ennemie)
+    print(FileTir)
+    print(FileTirAlien)
+    
 
 
 
