@@ -232,10 +232,6 @@ def MouvementAlien():
             for i in ennemie:
                 i.x+=i.vitesse*i.dir
                 i.Affichage() 
-            for i in ennemie :
-                if ennemie[i].x + hauteur_alien >= Spaceship.x - Spaceship.hauteur : 
-                    FinDePartie()
-            print("Perdu")
         Mafenetre.after(5,MouvementAlien)
     
 def Tir_Alien():
@@ -271,7 +267,7 @@ def FinDePartie():
     global Partie_en_Cours, Perdu
     canevas.delete("all")
     canevas.grid_remove()
-    Partie_en_Cours=False
+    Partie_en_Cours= False
     while not (ennemie == []):
         ennemie.pop()
     while not (FileTir == []):
