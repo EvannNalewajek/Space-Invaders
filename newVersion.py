@@ -42,12 +42,11 @@ nbre_alien = 15
 
 
 def NouvellePartie():
-    global vaisseau,ennemie,Vies
+    global vaisseau
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
     vaisseau = Spaceship(canevas, Mafenetre)
-    
     ennemie=[]
     for i in range(nbre_alien):
         ennemie.append(Alien(canevas, Mafenetre))
@@ -55,7 +54,8 @@ def NouvellePartie():
         i.Creation()
     ennemie[0].MouvementAlien(ennemie)
     Talien = TirAlien(0,ennemie,canevas,Mafenetre)
-    Talien.Tir_Alien()
+    Talien.Deplacement()
+    Talien.Tir_Alien(ennemie[0])
     Talien.Deplacement()
     #vaisseau.Reload()
    
@@ -72,7 +72,7 @@ canevas = Canvas(Mafenetre, width = largeurC, height = hauteurC, bg = 'black')
 canevas.grid(row=2,column=1,columnspan=2)
 canevas.grid_remove()
 canevas.focus_set()
-canevas.bind('<Key>',Spaceship.MouvementVaisseau)
+canevas.tag_bind('<Key>',Spaceship.MouvementVaisseau)
 
 #Lancement du gestionnaire d'événements
 Mafenetre.mainloop()

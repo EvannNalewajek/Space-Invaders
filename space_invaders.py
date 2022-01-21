@@ -174,7 +174,7 @@ class tirVaisseau:
         self.mouvement=False
         canevas.delete(self.apparence)
         ff.Retirer(FileTir)
-        tirVaisseau.Compteur-=1
+        tirVaisseau.Compteur -= 1
 
 class TirAlien:
     
@@ -322,7 +322,7 @@ def MouvementVaisseau(event):
                 ff.Ajouter(FileTir,tirVaisseau(vaisseau.x,vaisseau.y))
                 FileTir[tirVaisseau.Compteur-1].Deplacement()
                 Peut_Tirer=False
-                Mafenetre.after(1, Reload)
+                Mafenetre.after(1000, Reload)
             
 
      

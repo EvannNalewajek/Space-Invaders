@@ -57,7 +57,7 @@ class Spaceship:
         self.Canvas.itemconfig(self.apparence,image = self.image)
         
         
-    def MouvementVaisseau(self,event):
+    def MouvementVaisseau(self,event = None):
         touche = event.keysym
         if touche == 'Left':
             Spaceship.deplacement(-1)
