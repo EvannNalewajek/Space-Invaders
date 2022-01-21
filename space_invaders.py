@@ -5,7 +5,7 @@ Created on Sun Jan  2 17:03:43 2022
 @author: evann
 """
 
-from tkinter import Tk, Label, Button, Canvas, PhotoImage
+from tkinter import Tk, Label, Button, Canvas, PhotoImage, Menu
 import File_Fonctions as ff
 import Pile_Fonctions as pf
 from random import randint
@@ -31,6 +31,8 @@ scoreDisplay.grid(row=1,column=1)
 NbrVies=Label(Mafenetre,text="Vie : 3")
 NbrVies.grid(row=1,column=2)
 
+
+
 #Importation des images
 ImageVaisseau=PhotoImage(file='spaceship.gif')
 ImageDestroy=PhotoImage(file='spaceshipdestroy.gif')
@@ -39,11 +41,15 @@ ImageFond=PhotoImage(file='space.gif')
 
 
 
+
+
 #Caractéristiques du vaisseau
 largeur_vaisseau=30
 hauteur_vaisseau=32
 posX=largeur/2
 posY=hauteur-hauteur_vaisseau-5
+
+
 
 #Caractéristiques des aliens
 ennemie=[]
@@ -360,6 +366,17 @@ buttonStart.grid(row=0,column=1)
 buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
 buttonRejouer.grid(row=0,column=1)
 buttonRejouer.grid_remove()
+
+#création d'un menu
+menubar = Menu(Mafenetre)
+menuJeu = Menu(menubar, tearoff = 0)
+menuJeu.add_command(label = "Retry" , command = Rejouer)
+menuJeu.add_command(label = "Best Score" )
+menuJeu.add_command(label = "A propos" )
+menubar.add_cascade(label = "Menu" , menu = menuJeu)
+
+Mafenetre.config(menu = menubar)
+
 
 #Contrôle du vaisseau
 canevas = Canvas(Mafenetre, width = largeur, height = hauteur, bg = 'black')

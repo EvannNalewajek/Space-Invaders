@@ -6,6 +6,7 @@ Created on Fri Jan 21 14:46:44 2022
 """
 
 from Lib_vaisseau import tirVaisseau
+from Lib_Alien import TirAlien
 
 #création de la classe des ilots
 
@@ -18,6 +19,7 @@ class Ilots :
         self.y = 250
         self.hauteur = 5
         self.largeur = 5
+        self.nombre = 3
         self.apparence = self.canevas.create_rectangle(self.x - self.largeur,\
                                                        self.y - self.hauteur,\
                                                            self.x + self.largeur,\
@@ -27,5 +29,10 @@ class Ilots :
     
     
     def Creation(self) : 
+        self.apparence
+        
+    def Destruction(self) : 
+        if 
+        
         
         
