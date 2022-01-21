@@ -56,14 +56,16 @@ class Alien:
                 i.y += self.descente
         for i in ennemie:
             i.x += i.vitesse*i.dir
-            i.Affichage()  
-        self.fenetre.after(5,lambda : self.MouvementAlien(ennemie))
-            
-    def VictoireAlien(self,ennemie):
+            i.Affichage() 
         for i in ennemie :
             if ennemie[i].x + self.hauteur >= Spaceship.x - Spaceship.hauteur : 
                 FinDePartie()
         print("Perdu")
+        self.fenetre.after(5,lambda : self.MouvementAlien(ennemie))
+        
+        
+            
+    
         
         
         
