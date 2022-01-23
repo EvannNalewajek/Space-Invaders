@@ -5,6 +5,7 @@ Created on Sun Jan  2 17:03:43 2022
 @author: evann
 """
 
+#Importation des bibliothèques 
 from tkinter import Tk, Label, Button, Canvas, PhotoImage, Menu
 import File_Fonctions as ff
 import Pile_Fonctions as pf
@@ -34,25 +35,25 @@ NbrVies.grid(row=1,column=2)
 
 
 #Importation des images
-ImageVaisseau=PhotoImage(file='spaceship.gif')
-ImageDestroy=PhotoImage(file='spaceshipdestroy.gif')
-ImageAlien=PhotoImage(file='invader.gif')
-ImageFond=PhotoImage(file='space.gif')
+ImageVaisseau = PhotoImage(file = 'spaceship.gif')
+ImageDestroy = PhotoImage(file = 'spaceshipdestroy.gif')
+ImageAlien = PhotoImage(file = 'invader.gif')
+ImageFond = PhotoImage(file = 'space.gif')
 
 
 
 
 
 #Caractéristiques du vaisseau
-largeur_vaisseau=30
-hauteur_vaisseau=32
-posX=largeur/2
-posY=hauteur-hauteur_vaisseau-5
+largeur_vaisseau = 30
+hauteur_vaisseau = 32
+posX = largeur/2
+posY = hauteur - hauteur_vaisseau -5
 
 
 
 #Caractéristiques des aliens
-ennemie=[]
+ennemie = []
 largeur_alien = 22      
 hauteur_alien = 16
 ecart_alien = 10
@@ -63,84 +64,103 @@ VitesseDeplacement = 10
 VitesseAlien = 0.35
 
 #Caractéristiques des protections
-nbre_protections=3
-posY_protections=posY-55
-largeur_protections=50
-hauteur_protections=30
-PdV_protections=5
+nbre_protections = 3
+posY_protections = posY-55
+largeur_protections = 50
+hauteur_protections = 30
+PdV_protections = 5
 
 
 
 #Caractéristiques des tirs
-FileTir=[]
-FileTirAlien=[]
-vitesse_tir=1
-Peut_Tirer=True
+FileTir = []
+FileTirAlien = []
+vitesse_tir = 1
+Peut_Tirer = True
 
-Partie_en_Cours=False
+Partie_en_Cours = False
 
 
-#Création des classes
-class Spaceship:
+# Création de la classe vaisseau (joué par l'utilisateur), il est défini par sa position 
+# dans le canvas et par son apparence ici une image
+class Spaceship :
     
-    def __init__(self):
-        self.x=posX
-        self.y=posY
-        self.apparence=canevas.create_image(self.x,self.y,image=ImageVaisseau)
+    def __init__(self) :
+        self.x = posX
+        self.y = posY
+        self.apparence = canevas.create_image(self.x, self.y, image = ImageVaisseau)
 
 
-    def deplacement(self,dir):
+# Méthode qui permet aux vaisseaux de gérer les collisions avec le bord du canvas 
+# si il se dirigeait vers la gauche mais arrive au bord il ne peut que se déplacer vers la droite 
+# de même pour la droite
+    def deplacement(self,dir) :
         if Partie_en_Cours:
-            if self.x>=largeur_vaisseau and dir==-1:
-                self.x+=VitesseDeplacement*dir
-            elif self.x<=largeur-largeur_vaisseau and dir==1:
-                self.x+=VitesseDeplacement*dir
+            if self.x >= largeur_vaisseau and dir ==-1:
+                self.x += VitesseDeplacement * dir
+            elif self.x <= largeur - largeur_vaisseau and dir == 1:
+                self.x += VitesseDeplacement * dir
             self.Affichage()
+            
+            
+# Méthode qui permet d'afficher le vaisseau sur le canvas aux positions qui lui sont attribué  
+    def Affichage(self) :
+        canevas.coords(self.apparence, self.x, self.y)
         
-    def Affichage(self):
-        canevas.coords(self.apparence,self.x,self.y)
         
-    def Blesser(self):
+# Méthode qui permet d'afficher des états différents si le vaisseau est touché par un tir ennemi       
+    def Blesser(self) :
         self.Etat1()
         Mafenetre.after(100,self.Etat2)
         Mafenetre.after(200,self.Etat1)
         Mafenetre.after(300,self.Etat2)
         Mafenetre.after(400,self.Etat1)
         Mafenetre.after(500,self.Etat2)
-
-    def Etat1(self):
-        canevas.itemconfig(self.apparence,image=ImageDestroy)
         
+# Etat du vaisseau blessé par un tir ennemi
+    def Etat1(self) :
+        canevas.itemconfig(self.apparence,image = ImageDestroy)
+        
+# Etat du vaisseau "retour a la normale" après avoir été touché      
     def Etat2(self):
-        canevas.itemconfig(self.apparence,image=ImageVaisseau)
+        canevas.itemconfig(self.apparence,image = ImageVaisseau)
     
 
-class Alien:
+
+# Création de la classe Alien (ennemie du joueur) défini par sa position dans le canvas 
+# son état (vivant ou pas), sa vitesse et un compteur du nombre d'alien 
+class Alien :
     
-    Compteur=0
-    def __init__(self):
+    Compteur = 0 
+    def __init__(self) :
         Alien.Compteur += 1
         self.Compteur = Alien.Compteur
         self.vivant = True
-        self.x=self.Compteur*(ecart_alien+largeur_alien)
-        self.y=hauteur_ligne
+        self.x = self.Compteur*(ecart_alien+largeur_alien)
+        self.y = hauteur_ligne
         self.dir=1
-        self.vitesse=VitesseAlien
-    
-    def Creation(self):
-        self.apparence=canevas.create_image(self.x,self.y,image=ImageAlien)
+        self.vitesse = VitesseAlien
 
-    def Affichage(self):
+# Méthode réation de l'alien dans le canvas    
+    def Creation(self) :
+        self.apparence = canevas.create_image(self.x, self.y, image = ImageAlien)
+
+# Méthode affichage de l'Alien selon sa position dans le canvas
+    def Affichage(self) :
         canevas.coords(self.apparence,self.x,self.y)
-    
-    def Destruction(self): 
+  
+# Méthode qui permet de détruire l'alien si son etat est "pas vivant", si plus d'ennemie
+# on utilise la fonction fin de partie  
+    def Destruction(self) : 
         if self.vivant == False : 
             canevas.delete(self.apparence)
         if ennemie == []:
             FinDePartie()
             
 
-class Alien_Bonus:
+# Création de la classe Alien Bonus qui est un autre type d'ennemie définie comme les aliens
+# mais qui rapporte plus de points et se déplace plus rapidement
+class Alien_Bonus :
     def __init__(self) : 
        self.vivant = True
        self.x = posX
@@ -148,258 +168,309 @@ class Alien_Bonus:
        self.dir = 1
        self.vitesse = VitesseAlien * 2
 
-    def Affichage(self):
-        canevas.coords(self.apparence,self.x,self.y)
-        
-    def Creation(self):
-        self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
+# Méthode qui permet d'afficher l'alien bonus dans le canvas selon la position
+    def Affichage(self) :
+        canevas.coords(self.apparence, self.x, self.y)
+ 
+#Méthode qui permet de créer l'alien bonus dans le canvas
+    def Creation(self) :
+        self.apparence = canevas.create_image(self.x, self.y, image = ImageVaisseau)
         Alien_Bonus.Mouvement(self)
-        
-    def Mouvement(self):
+
+
+# Méthode qui permet que si la partie est en cours l'alien se déplacent automatiquement
+#      
+    def Mouvement(self) :
         if Partie_en_Cours:
-            if self.x + largeur_alien>=largeur and self.dir == 1 : 
+            if self.x + largeur_alien >= largeur and self.dir == 1 : 
                 self.dir = -1
-            elif self.x-largeur_alien<=0 and self.dir == -1 :
+            elif self.x-largeur_alien <=0 and self.dir == -1 :
                 self.dir = 1
             self.x += self.vitesse * self.dir
             self.Affichage()
         Mafenetre.after(5,self.Mouvement)
-        
-class Protections:
-    Compteur=0
-    def __init__(self):
-        Protections.Compteur+=1
-        self.Compteur=Protections.Compteur
-        self.x=largeur*self.Compteur/(nbre_protections+1)
-        Protections.y=posY_protections
-        self.Resistance=PdV_protections
-        self.Apparence=canevas.create_rectangle(self.x,self.y,self.x+largeur_protections,self.y+hauteur_protections,width=2,outline='black',fill='white')
-        self.VieProtection=canevas.create_text(self.x+largeur_protections/2,self.y+hauteur_protections/2,text=str(self.Resistance),fill='black')
-        
-    def Blesser(self):
-        self.Resistance-=1
-        if self.Resistance>0:
-            canevas.itemconfig(self.VieProtection,text=(str(self.Resistance)))
+ 
+# Création de la classe protections qui est défini par un rectangle avec un nombre de points 
+# de vies 
+class Protections :
+    Compteur = 0
+    def __init__(self) :
+        Protections.Compteur += 1
+        self.Compteur = Protections.Compteur
+        self.x = largeur * self.Compteur / (nbre_protections + 1)
+        Protections.y = posY_protections
+        self.Resistance = PdV_protections
+        self.Apparence = canevas.create_rectangle(self.x, self.y, self.x + largeur_protections,\
+                                                  self.y + hauteur_protections,\
+                                                width = 2, outline = 'black',fill = 'white')
+        self.VieProtection = canevas.create_text(self.x + largeur_protections/2,\
+                                                 self.y + hauteur_protections/2,\
+                                                text = str(self.Resistance), fill = 'black')
+
+            
+# Méthode qui permet que si la protection est touché par un tir alien alors la protection
+# perd un point de vie 
+    def Blesser(self) :
+        self.Resistance -= 1
+        if self.Resistance > 0:
+            canevas.itemconfig(self.VieProtection,text = (str(self.Resistance)))
         else:
             self.Destruction()
-    
-    def Destruction(self):
+ 
+# Méthode qui permet que si la protection n'a plus de points de vies alors celle-ci 
+#est détruite
+    def Destruction(self) :
         canevas.delete(self.Apparence)
         canevas.delete(self.VieProtection)
         
-        
-class tirVaisseau:
+# Création de la classe des tirs du vaisseau qui est défini par une ligne, 
+# sa position , et si il peut se déplacer ou non         
+class tirVaisseau :
     
-    Compteur=0
-    def __init__(self,X,Y):
-        self.x=X
-        self.y=Y
-        self.mouvement=True
-        self.apparence=canevas.create_line(self.x, self.y, self.x, self.y+5,fill='white')
+    Compteur = 0
+    def __init__(self,X,Y) :
+        self.x = X
+        self.y = Y
+        self.mouvement = True
+        self.apparence = canevas.create_line(self.x, self.y, self.x, self.y + 5, fill = 'white')
         tirVaisseau.Compteur += 1
-        
-    def Affichage(self):
-        canevas.coords(self.apparence,self.x,self.y,self.x,self.y+5)
-        
-    def Deplacement(self):
+
+# Méthode qui permet d'afficher le tir dans le canvas selon sa position        
+    def Affichage(self) :
+        canevas.coords(self.apparence, self.x, self.y, self.x, self.y + 5)
+
+# Méthode qui permet aux tirs de se déplacer et si il touche lance la méthode Toucher         
+    def Deplacement(self) :
         if Partie_en_Cours:
             if self.mouvement:
-                self.y-=vitesse_tir
+                self.y -= vitesse_tir
                 self.Affichage()
                 self.Toucher()
-                Mafenetre.after(5,self.Deplacement)
+                Mafenetre.after(5, self.Deplacement)
 
-    def Toucher(self):
+# Méthode qui permet que si le tir touche l' alien bonus ou un des aliens ceux-ci sont
+# détruits et le score est actualisé selon l'ennemie touché
+    def Toucher(self) :
         global AB, Score
-        if self.y<0:
+        if self.y < 0 :
             self.Fin()
             
-        elif self.y>=AB.y-5 and self.y<=AB.y+5 and\
-            self.x<=AB.x+largeur_vaisseau/2 and\
-            self.x>=AB.x-largeur_vaisseau/2 :
+        elif self.y >= AB.y - 5 and self.y <= AB.y + 5 and\
+            self.x <= AB.x + largeur_vaisseau/2 and\
+            self.x >= AB.x - largeur_vaisseau/2 :
                 canevas.delete(AB.apparence)
                 self.Fin()
-                Score+=150
+                Score += 150
                 ScoreMAJ()     
         
         else:
             for i in ennemie:
-                if i.vivant and self.y>=i.y and self.y<=i.y+hauteur_alien and self.x<=i.x+largeur_alien and self.x>=i.x:
+                if i.vivant and self.y >= i.y and self.y <= i.y + hauteur_alien and\
+                    self.x <= i.x + largeur_alien and self.x >= i.x :
                     self.Fin()
                     i.vivant = False
                     ennemie.pop(ennemie.index(i))
                     i.Destruction()
-                    Score+=25
+                    Score += 25
                     ScoreMAJ()
-        
-    def Fin(self):
-        self.mouvement=False
+
+# Méthode qui permet que si le tir n'a touché aucun ennemie celui-ci est retiré de la file
+# des tirs est supprimé du canvas          
+    def Fin(self) :
+        self.mouvement = False
         canevas.delete(self.apparence)
         ff.Retirer(FileTir)
         tirVaisseau.Compteur -= 1
 
+
+# Création de la classe Tir alien qui est définie par une ligne , sa position dans le canvas
 class TirAlien:
     
     def __init__(self,i):
-        self.x=ennemie[i].x
-        self.y=ennemie[i].y
-        self.apparence=canevas.create_line(self.x , self.y-4 , self.x ,\
-        self.y , fill='red')
-        self.mouvement=True
+        self.x = ennemie[i].x
+        self.y = ennemie[i].y
+        self.apparence = canevas.create_line(self.x , self.y - 4 , self.x ,\
+        self.y , fill = 'red')
+        self.mouvement = True
         self.Deplacement()
-        
+
+# Méthode qui permet d'afficher le tir dans le canvas selon sa position        
     def Affichage(self):
-        canevas.coords(self.apparence , self.x , self.y-4 , self.x , self.y)
-        
+        canevas.coords(self.apparence , self.x , self.y - 4 , self.x , self.y)
+
+# Méthode qui permet au tir de se déplacer         
     def Deplacement(self):
         if Partie_en_Cours:
             if self.mouvement:
-                self.y+=vitesse_tir
+                self.y += vitesse_tir
                 self.Affichage()
                 self.Toucher()
                 Mafenetre.after(5,self.Deplacement)
-            
+
+# Méthode qui retire le tir du canvas si il n'a pas touché le vaisseau et qui sinon lui
+# retire un point de vie si le nombre de vies du vaisseau tombe à 0 alors c'est la fin de la partie 
+# enfin si celui-ci touche une protection alors elle perd un points de vie             
     def Toucher(self):
         global Vies
-        if self.y>hauteur:
+        if self.y > hauteur:
             self.mouvement = False
             canevas.delete(self.apparence)
             ff.Retirer(FileTirAlien)
-        elif self.y>=vaisseau.y-5 and self.y<=vaisseau.y+5 and\
-            self.x<=vaisseau.x+largeur_vaisseau/2 and\
-            self.x>=vaisseau.x-largeur_vaisseau/2 :
-                self.mouvement=False
+        elif self.y >= vaisseau.y - 5 and self.y <= vaisseau.y + 5 and\
+            self.x <= vaisseau.x + largeur_vaisseau/2 and\
+            self.x >= vaisseau.x - largeur_vaisseau/2 :
+                self.mouvement = False
                 canevas.delete(self.apparence)
                 ff.Retirer(FileTirAlien)
-                Vies-=1
+                Vies -= 1
                 vaisseau.Blesser()
                 VieMAJ()
-                if Vies==0:
+                if Vies == 0:
                     FinDePartie()
         else:
             for i in Murs:
-                if i.Resistance>0 and self.x>=i.x and self.x<=i.x+largeur_protections and self.y>=Protections.y and self.y<=Protections.y+hauteur_protections:
+                if i.Resistance > 0 and self.x >= i.x and\
+                    self.x <= i.x + largeur_protections and\
+                    self.y >= Protections.y and\
+                    self.y <= Protections.y + hauteur_protections :
                     i.Blesser()
-                    self.mouvement=False
+                    self.mouvement = False
                     canevas.delete(self.apparence)
                     ff.Retirer(FileTirAlien)
 
 
+
+# Fonction qui permet aux aliens des se déplacer et de gérer les collisions avec le bord 
+# du canvas et si ceux-ci rencontrent le bord alors ils descendent d'une ligne
 def MouvementAlien():
         global ennemie, Partie_en_Cours
         if Partie_en_Cours:
-            if (ennemie[-1].x+largeur_alien>=largeur and ennemie[-1].dir==1) or (ennemie[0].x-largeur_alien<=0 and ennemie[0].dir==-1):
+            if (ennemie[-1].x + largeur_alien >= largeur and ennemie[-1].dir == 1) or\
+                (ennemie[0].x - largeur_alien <= 0 and ennemie[0].dir == -1):
                 for i in ennemie:
-                    i.dir*=-1
-                    i.y+=descente_alien
+                    i.dir *= - 1
+                    i.y += descente_alien
             for i in ennemie:
-                i.x+=i.vitesse*i.dir
+                i.x += i.vitesse*i.dir
                 i.Affichage() 
         Mafenetre.after(5,MouvementAlien)
-    
-def Tir_Alien():
+ 
+# Fonction qui permet aux aliens de tirer de manière aléatoire selon leur position dans la file
+def Tir_Alien() :
     global ennemie, FileTirAlien, Partie_en_Cours
     if Partie_en_Cours:
-        L=[i.vivant for i in ennemie]
-        i=randint(0, len(ennemie)-1)
-        if L[i]:
+        L = [i.vivant for i in ennemie]
+        i = randint(0, len(ennemie) - 1)
+        if L[i] :
             ff.Ajouter(FileTirAlien,TirAlien(i))
             Mafenetre.after(500,Tir_Alien)
-        else:
+        else :
             Mafenetre.after(1,Tir_Alien)
     else : 
         Mafenetre.after(5, Tir_Alien)
 
 
-def NouvellePartie():
+# Fonction qui permet de jouer une partie, donc affiche les différents élements des classes
+# et qui permet à l'utilisateur de jouer
+def NouvellePartie() :
     global vaisseau, AB, ennemie, Vies, Score, Partie_en_Cours, Murs
     canevas.grid()
-    canevas.create_image(0,0,image=ImageFond)
+    canevas.create_image(0, 0, image = ImageFond)
     buttonStart.grid_remove()
-    vaisseau=Spaceship()
-    Protections.Compteur=0
-    Murs=[Protections() for i in range(nbre_protections)]
-    Vies=3
-    for i in range(nbre_alien):
+    vaisseau = Spaceship()
+    Protections.Compteur = 0
+    Murs = [Protections() for i in range(nbre_protections)]
+    Vies = 3
+    for i in range(nbre_alien) :
         ennemie.append(Alien())
-    for i in ennemie:
+    for i in ennemie :
         i.Creation()
     AB = Alien_Bonus()
     Mafenetre.after(7500, AB.Creation)
-    Partie_en_Cours=True
+    Partie_en_Cours = True
+ 
     
-def FinDePartie():
+# Fonction qui fait "fin de partie" pour le joueur, donc qui retire tout les éléments 
+# du canvas 
+def FinDePartie() :
     global Partie_en_Cours, Perdu
     canevas.delete("all")
     canevas.grid_remove()
-    Partie_en_Cours= False
-    while not (ennemie == []):
+    Partie_en_Cours = False
+    while not (ennemie == []) :
         ennemie.pop()
-    while not (FileTir == []):
+    while not (FileTir == []) :
         ff.Retirer(FileTir)
-    while not (FileTirAlien == []):
+    while not (FileTirAlien == []) :
         ff.Retirer(FileTirAlien)
     buttonRejouer.grid()
-    Perdu=Label(Mafenetre,text="Game Over", fg = "red")
+    Perdu = Label(Mafenetre,text = "Game Over", fg = "red")
     Perdu.grid(row = 2,column = 1)
-    
-def Rejouer():
+
+# Fonction qui permet de rejouer une partie en réinitialisant les vies les ennemis et le canvas    
+def Rejouer() :
     global NbrVies
     buttonRejouer.grid_remove()
     Perdu.destroy()
-    Alien.Compteur=0
+    Alien.Compteur = 0
     NbrVies.destroy()
-    NbrVies=Label(Mafenetre,text="Vie : 3")
-    NbrVies.grid(row=1,column=2)
+    NbrVies = Label(Mafenetre,text="Vie : 3")
+    NbrVies.grid(row = 1,column = 2)
     NouvellePartie()
     
-    
-def Reload():
+ 
+# Fonction qui permet de recharger le tir du vaisseau
+def Reload() :
     global Peut_Tirer
-    Peut_Tirer=True
+    Peut_Tirer = True
     return Peut_Tirer
 
     
-    
-def VieMAJ():
+# Fonction qui permet de mettre à jour le nombre de vies et l'affichage du nombre de vies    
+def VieMAJ() :
     global Vies, NbrVies
-    carac="Vie : "+str(Vies)
+    carac = "Vie : " + str(Vies)
     NbrVies.destroy()
-    NbrVies=Label(Mafenetre,text=carac)
-    NbrVies.grid(row=1,column=2)
-    
-def ScoreMAJ():
+    NbrVies = Label(Mafenetre,text = carac)
+    NbrVies.grid(row = 1,column = 2)
+
+# Fonction qui permet de mettre à jour l'affichage du score et le score    
+def ScoreMAJ() :
     global Score, scoreDisplay
-    carac="Score : "+str(Score)
+    carac = "Score : " + str(Score)
     scoreDisplay.destroy()
-    scoreDisplay=Label(Mafenetre,text=carac)
-    scoreDisplay.grid(row=1,column=1)
+    scoreDisplay = Label(Mafenetre,text = carac)
+    scoreDisplay.grid(row = 1,column = 1)
+    
+     
     
 
-#Mouvement du vaisseau
-def MouvementVaisseau(event):
+# Fonction qui permet aux vaisseaux de se déplacer et de tirer selon les touches du clavier
+# de plus le tir a une fonction qui bloque le tir du vaiseau et a besoin de la fonction reload
+# pour que le vaisseau puisse de nouveau tirer
+def MouvementVaisseau(event) :
     global Peut_Tirer
-    touche=event.keysym
-    if touche=='Left':
+    touche = event.keysym
+    if touche == 'Left' :
             vaisseau.deplacement(-1)
-    elif touche=='Right':
+    elif touche == 'Right' :
             vaisseau.deplacement(1)
-    elif touche=='space':
-            if Peut_Tirer:
+    elif touche == 'space' :
+            if Peut_Tirer :
                 global FileTir
-                ff.Ajouter(FileTir,tirVaisseau(vaisseau.x,vaisseau.y))
-                FileTir[tirVaisseau.Compteur-1].Deplacement()
-                Peut_Tirer=False
+                ff.Ajouter(FileTir, tirVaisseau(vaisseau.x, vaisseau.y))
+                FileTir[tirVaisseau.Compteur - 1].Deplacement()
+                Peut_Tirer = False
                 Mafenetre.after(1000, Reload)
             
 
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePartie)
-buttonStart.grid(row=0,column=1)
+buttonStart.grid(row = 0,column = 1)
 
 #Création du widget bouton "Relancer une partie"
-buttonRejouer = Button (Mafenetre, text="REJOUER", fg = "blue", command=Rejouer)
-buttonRejouer.grid(row=0,column=1)
+buttonRejouer = Button (Mafenetre, text = "REJOUER", fg = "blue", command = Rejouer)
+buttonRejouer.grid(row = 0,column = 1)
 buttonRejouer.grid_remove()
 
 #création d'un menu
@@ -407,7 +478,6 @@ menubar = Menu(Mafenetre)
 menuJeu = Menu(menubar, tearoff = 0)
 menuJeu.add_command(label = "Retry" , command = Rejouer)
 menuJeu.add_command(label = "Best Score" )
-menuJeu.add_command(label = "A propos" )
 menubar.add_cascade(label = "Menu" , menu = menuJeu)
 
 Mafenetre.config(menu = menubar)
