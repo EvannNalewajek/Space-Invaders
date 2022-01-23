@@ -62,6 +62,14 @@ descente_alien = 10
 VitesseDeplacement = 10
 VitesseAlien = 0.35
 
+#Caractéristiques des protections
+nbre_protections=3
+posY_protections=posY-55
+largeur_protections=50
+hauteur_protections=30
+PdV_protections=5
+
+
 
 #Caractéristiques des tirs
 FileTir=[]
@@ -130,6 +138,54 @@ class Alien:
             canevas.delete(self.apparence)
         if ennemie == []:
             FinDePartie()
+            
+
+class Alien_Bonus:
+    def __init__(self) : 
+       self.vivant = True
+       self.x = posX
+       self.y = hauteur_ligne
+       self.dir = 1
+       self.vitesse = VitesseAlien * 2
+
+    def Affichage(self):
+        canevas.coords(self.apparence,self.x,self.y)
+        
+    def Creation(self):
+        self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
+        Alien_Bonus.Mouvement(self)
+        
+    def Mouvement(self):
+        if Partie_en_Cours:
+            if self.x + largeur_alien>=largeur and self.dir == 1 : 
+                self.dir = -1
+            elif self.x-largeur_alien<=0 and self.dir == -1 :
+                self.dir = 1
+            self.x += self.vitesse * self.dir
+            self.Affichage()
+        Mafenetre.after(5,self.Mouvement)
+        
+class Protections:
+    Compteur=0
+    def __init__(self):
+        Protections.Compteur+=1
+        self.Compteur=Protections.Compteur
+        self.x=largeur*self.Compteur/(nbre_protections+1)
+        Protections.y=posY_protections
+        self.Resistance=PdV_protections
+        self.Apparence=canevas.create_rectangle(self.x,self.y,self.x+largeur_protections,self.y+hauteur_protections,width=2,outline='black',fill='white')
+        self.VieProtection=canevas.create_text(self.x+largeur_protections/2,self.y+hauteur_protections/2,text=str(self.Resistance),fill='black')
+        
+    def Blesser(self):
+        self.Resistance-=1
+        if self.Resistance>0:
+            canevas.itemconfig(self.VieProtection,text=(str(self.Resistance)))
+        else:
+            self.Destruction()
+    
+    def Destruction(self):
+        canevas.delete(self.Apparence)
+        canevas.delete(self.VieProtection)
         
         
 class tirVaisseau:
@@ -220,6 +276,13 @@ class TirAlien:
                 VieMAJ()
                 if Vies==0:
                     FinDePartie()
+        else:
+            for i in Murs:
+                if i.Resistance>0 and self.x>=i.x and self.x<=i.x+largeur_protections and self.y>=Protections.y and self.y<=Protections.y+hauteur_protections:
+                    i.Blesser()
+                    self.mouvement=False
+                    canevas.delete(self.apparence)
+                    ff.Retirer(FileTirAlien)
 
 
 def MouvementAlien():
@@ -249,11 +312,13 @@ def Tir_Alien():
 
 
 def NouvellePartie():
-    global vaisseau, AB, ennemie, Vies, Score, Partie_en_Cours
+    global vaisseau, AB, ennemie, Vies, Score, Partie_en_Cours, Murs
     canevas.grid()
     canevas.create_image(0,0,image=ImageFond)
     buttonStart.grid_remove()
     vaisseau=Spaceship()
+    Protections.Compteur=0
+    Murs=[Protections() for i in range(nbre_protections)]
     Vies=3
     for i in range(nbre_alien):
         ennemie.append(Alien())
@@ -333,30 +398,7 @@ def MouvementVaisseau(event):
 
      
     
-class Alien_Bonus:
-    def __init__(self) : 
-       self.vivant = True
-       self.x = posX
-       self.y = hauteur_ligne
-       self.dir = 1
-       self.vitesse = VitesseAlien * 2
 
-    def Affichage(self):
-        canevas.coords(self.apparence,self.x,self.y)
-        
-    def Creation(self):
-        self.apparence = canevas.create_image(self.x,self.y, image = ImageVaisseau)
-        Alien_Bonus.Mouvement(self)
-        
-    def Mouvement(self):
-        if Partie_en_Cours:
-            if self.x + largeur_alien>=largeur and self.dir == 1 : 
-                self.dir = -1
-            elif self.x-largeur_alien<=0 and self.dir == -1 :
-                self.dir = 1
-            self.x += self.vitesse * self.dir
-            self.Affichage()
-        Mafenetre.after(5,self.Mouvement)
 
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePartie)
