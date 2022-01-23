@@ -2,7 +2,20 @@
 """
 Created on Sun Jan  2 17:03:43 2022
 
-@author: evann
+Dernière modification faite le 23/01/2022
+
+Fait par : NALEWAJEK Evann / NENACH Mathis
+Groupe B
+
+to-do liste (plus d'informations dans le README) :
+             - Séparer les classes dans plusieurs fichiers
+             - Utiliser des Piles pour les protections
+             - Ajouter plusieurs lignes d'aliens
+             - Difficulté croissance au fil des nouveaux (augmentation de la fréquence de tir)
+             - Ajout de la collision entre le tir du vaisseau et la protection
+             - Ajout de la sécurité pour les variables des classes (self.__x au lieu de self.x,
+                                                                    et vaisseau._Spaceship__.x au lieu de vaisseau.x)
+             - Ajout d'un affichage du meilleur score dans le menu
 """
 
 from tkinter import Tk, Label, Button, Canvas, PhotoImage, Menu
@@ -24,7 +37,7 @@ largeur=640
 
 #Affichage du score
 Score=0
-scoreDisplay=Label(Mafenetre,text='Score: 0')
+scoreDisplay=Label(Mafenetre,text='Score : 0')
 scoreDisplay.grid(row=1,column=1)
 
 #Affichage de la vie
