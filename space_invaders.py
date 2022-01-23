@@ -156,7 +156,7 @@ class Alien :
 
 # Méthode réation de l'alien dans le canvas    
     def Creation(self) :
-        self.apparence = canevas.create_image(self.x, self.y, image = ImageAlien)
+        self.apparence = canevas.create_image(self.x, self.y, anchor='nw', image = ImageAlien)
 
 # Méthode affichage de l'Alien selon sa position dans le canvas
     def Affichage(self) :
