@@ -24,7 +24,7 @@
 
 	- Fonctionnement du score : Si un alien est éliminé, le score augmente de 25 points.
 				    Si l'alien bonus est éliminé, le score augmente de 150 points.
-				    Le score ne se remet pas à 0 au lancement d'une nouvelle partie.
+				    Le score se remet à 0 au lancement d'une nouvelle partie.
 
 	- Fonctionnement des booléens : Il y a 2 booléens dans le code : Peut_Tirer et Partie_en_Cours.
 					Ils permettent de bloquer certaines fonctions tournant en arrière-plan s'ils sont sur False.
