@@ -342,9 +342,6 @@ def FinDePartie():
     buttonRejouer.grid()
     Perdu=Label(Mafenetre,text="Game Over", fg = "red")
     Perdu.grid(row = 2,column = 1)
-    print(ennemie)
-    print(FileTir)
-    print(FileTirAlien)
     
 def Rejouer():
     global NbrVies
@@ -395,10 +392,6 @@ def MouvementVaisseau(event):
                 Peut_Tirer=False
                 Mafenetre.after(1000, Reload)
             
-
-     
-    
-
 
 #Création du widget bouton "Lancement d'une partie"
 buttonStart = Button (Mafenetre, text="START", fg = "blue", command = NouvellePartie)
